@@ -7,8 +7,8 @@ public final class ExperienceSystem implements RPetsComponent
 {
     @NonNull protected final RPets pets;
 
-    private int base = 1000;
-    private double exponent = 0.25d;
+    private int base;
+    private double exponent;
 
 
     public ExperienceSystem(@NonNull RPets pets) {
@@ -17,13 +17,8 @@ public final class ExperienceSystem implements RPetsComponent
 
     @Override
     public void init() throws Exception {
-        if(!getPetRef().getConfig().contains("experience.base"))
-            getPetRef().getLogback().logWarn("Key experience.base not found, using default value");
-        if(!getPetRef().getConfig().contains("experience.exponent"))
-            getPetRef().getLogback().logWarn("Key experience.exponent not found, using default value");
-        //TODO: config wrapper probably
-        this.base = getPetRef().getConfig().getInt("experience.base", 1000);
-        this.exponent = getPetRef().getConfig().getDouble("experience.exponent", 0.25d);
+        this.base = getPetRef().getConfigRetail().get(Integer.class,"experience.base",  1000);
+        this.exponent = getPetRef().getConfigRetail().get(Double.class,"experience.exponent", 0.25d);
     }
 
     public int level(long xp) {

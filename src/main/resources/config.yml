@@ -2,6 +2,7 @@ prefix: "&3Retrox &4Pets"
 experience:
  base: 1000
  exponent: 0.25d
+
 breaking:
  default: 2
  stone: 1

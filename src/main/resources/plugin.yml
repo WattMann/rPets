@@ -3,3 +3,6 @@ main: ${plugin_main}
 version: ${plugin_version}
 api-version: ${plugin_api-version}
 depend: ${plugin_depend}
+commands:
+  petxp:
+    permission: rpets.use

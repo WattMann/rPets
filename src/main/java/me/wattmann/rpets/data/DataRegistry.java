@@ -33,7 +33,7 @@ public final class DataRegistry implements RPetsComponent {
     @Override
     public void init() throws Exception {
         this.data_path = Path.of(getPetRef().getDataFolder().toPath().toString(), "data");
-        bukkitExecutor.executeTicking(this::saveCachedAsync, 0L, 20 * 10);
+        bukkitExecutor.executeTicking(this::saveCachedAsync, 0L, 20 * 60 * 5);
         kernel.getLogback().logInfo("Async save callback hooked");
     }
 
@@ -118,15 +118,12 @@ public final class DataRegistry implements RPetsComponent {
                 DataProfile profile = null;
                 try {
                     profile = readFile(uuid);
-                    System.out.println("reading profile");
                 } catch (IOException e) {
                     if (create)
                         profile = DataProfile.builder().uuid(uuid).data(new DataProfile.PetData()).build();
-                    System.out.println("created new profile");
                 }
                 if (profile != null)
                     cache.add(profile);
-                System.out.println("returned profile");
                 return profile;
             });
         }, bukkitExecutor).orTimeout(1, TimeUnit.MINUTES);
@@ -134,7 +131,6 @@ public final class DataRegistry implements RPetsComponent {
 
     private @NonNull DataProfile readFile(@NonNull UUID uuid) throws IOException {
         try (InputStream in = new FileInputStream(data_path.resolve(uuid.toString() + ".bin").toFile())) {
-            System.out.println("reading file");
             DataProfile.DataProfileBuilder builder = DataProfile.builder();
 
             StringBuffer key_buffer = new StringBuffer();
