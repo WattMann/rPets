@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
     private final UUID uuid;
     private final PetData data;
 
-    public static class PetData implements Iterable<Map.Entry<String, Integer>>
+    public static class PetData implements Iterable<Map.Entry<String, Long>>
     {
-        private final Map<String, Integer> entries;
+        private final Map<String, Long> entries;
 
         /**
          * Default constructor, constructs empty instance of this object
@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 
         /**
          * Constructs an instance of this object with specified contents
-         * @param map {@link Map<String,Integer>} default content
+         * @param map {@link Map<String,Long>} default content
          * */
-        public PetData(@NonNull Map<String, Integer> map) {
+        public PetData(@NonNull Map<String, Long> map) {
             this();
             entries.putAll(map);
             entries.keySet().forEach(ChatColor::stripColor);
@@ -39,35 +39,35 @@ import java.util.stream.Collectors;
         /**
          * Returns an optional integer representing experience value for given pet name
          * @param petName name of the pet
-         * @return {@link Optional<Integer>} experience integer
+         * @return {@link Optional<Integer>} experience value
          * */
-        public Optional<Integer> getExperience(@NonNull String petName) {
+        public Optional<Long> getExperience(@NonNull String petName) {
             return Optional.ofNullable(entries.get(ChatColor.stripColor(petName)));
         }
 
         /**
          * Used to set experience level to given pet name
          * @param petName name of the pet
-         * @param var experience integer
+         * @param var experience value
          * */
-        public synchronized void setExperience(@NonNull String petName, int var) {
+        public synchronized void setExperience(@NonNull String petName, long var) {
             entries.put(ChatColor.stripColor(petName), var);
         }
 
         /**
-         * Used to add experience to current experience integer to a given pet name
+         * Used to add experience to current experience value to a given pet name
          * @param petName name of the pet
-         * @param var experience integer to add to current experience integer
+         * @param var experience integer to add to current experience value
          * */
-        public synchronized void addExperience(@NonNull String petName, int var) {
-            setExperience(petName, getExperience(petName).orElse(0) + var);
+        public synchronized void addExperience(@NonNull String petName, long var) {
+            setExperience(petName, getExperience(petName).orElse(0L) + var);
         }
 
         /**
          * Returns an unmutable copy of entries saved in the original map
          * */
         @Override
-        public @NonNull Iterator<Map.Entry<String, Integer>> iterator() {
+        public @NonNull Iterator<Map.Entry<String, Long>> iterator() {
             return Map.copyOf(entries).entrySet().iterator();
         }
     }

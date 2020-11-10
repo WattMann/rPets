@@ -3,7 +3,7 @@ package me.wattmann.rpets.imp;
 import lombok.NonNull;
 import me.wattmann.rpets.RPets;
 
-public interface KernelReference
+public interface RPetsComponent
 {
     /**
      * Used to initialize this object.
@@ -22,5 +22,5 @@ public interface KernelReference
     /**
      * Returns a reference to the plugin's kernel, non-null ofc.
      * */
-    @NonNull RPets getKernelReference();
+    @NonNull RPets getPetRef();
 }

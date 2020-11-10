@@ -4,14 +4,14 @@ import lombok.Getter;
 import lombok.NonNull;
 import me.wattmann.rpets.data.DataRegistry;
 import me.wattmann.rpets.listeners.KernelListener;
-import me.wattmann.rpets.logback.KernelFeedback;
+import me.wattmann.rpets.logback.Logback;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class RPets extends JavaPlugin
 {
     @NonNull @Getter
-    protected KernelFeedback kernelFeedback;
+    protected Logback logback;
 
     @NonNull @Getter
     protected KernelListener kernelListener;
@@ -21,13 +21,18 @@ public final class RPets extends JavaPlugin
 
     @Override
     public void onLoad() {
-        this.kernelFeedback = KernelFeedback.make("§6|§fRPets§6|");
 
-        this.kernelFeedback.logInfo("Hello there!");
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
+        logback.logInfo("Config loaded");
+
+        this.logback = Logback.make("§6|§fRPets§6|");
 
         dataRegistry = new DataRegistry(this);
 
         kernelListener = new KernelListener(this);
+
+        logback.logInfo("Finished loading");
     }
 
     @Override
@@ -37,24 +42,24 @@ public final class RPets extends JavaPlugin
         try {
             dataRegistry.init();
         } catch (Exception e) {
-            kernelFeedback.logError("Failed to initialize data registry.", e);
+            logback.logError("Failed to initialize data registry.", e);
             disable();
             return;
         }
-        kernelFeedback.logInfo("Data registry initialized!");
+        logback.logInfo("Data registry initialized!");
 
         try {
             kernelListener.init();
         } catch (Exception e) {
-            kernelFeedback.logError("Failed to initialize kernel listener.", e);
+            logback.logError("Failed to initialize kernel listener.", e);
             disable();
             return;
         }
-        kernelFeedback.logInfo("Kernel listener initialized!");
+        logback.logInfo("Kernel listener initialized!");
     }
 
     private void disable() {
-        kernelFeedback.logInfo("Disabling the plugin...");
+        logback.logInfo("Disabling the plugin...");
         Bukkit.getPluginManager().disablePlugin(this);
     }
 
@@ -63,7 +68,7 @@ public final class RPets extends JavaPlugin
         try {
             dataRegistry.term();
         } catch (Exception e) {
-            kernelFeedback.logError("Failed to terminate data registry.", e);
+            logback.logError("Failed to terminate data registry.", e);
         }
     }
 }

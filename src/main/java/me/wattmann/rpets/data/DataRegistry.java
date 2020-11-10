@@ -3,13 +3,8 @@ package me.wattmann.rpets.data;
 import lombok.NonNull;
 import me.wattmann.concurrent.BukkitExecutor;
 import me.wattmann.rpets.RPets;
-import me.wattmann.rpets.imp.KernelReference;
-import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftEntity;
-import org.bukkit.entity.Entity;
-import org.bukkit.scheduler.BukkitRunnable;
+import me.wattmann.rpets.imp.RPetsComponent;
 
-import javax.print.attribute.standard.RequestingUserName;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
@@ -17,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 
-public final class DataRegistry implements KernelReference {
+public final class DataRegistry implements RPetsComponent {
 
     @NonNull
     protected final RPets kernel;
@@ -37,23 +32,23 @@ public final class DataRegistry implements KernelReference {
 
     @Override
     public void init() throws Exception {
-        this.data_path = Path.of(getKernelReference().getDataFolder().toPath().toString(), "data");
+        this.data_path = Path.of(getPetRef().getDataFolder().toPath().toString(), "data");
         bukkitExecutor.executeTicking(this::saveCachedAsync, 0L, 20 * 10);
-        kernel.getKernelFeedback().logInfo("Async save callback hooked");
+        kernel.getLogback().logInfo("Async save callback hooked");
     }
 
     @Override
     public void term() throws Exception {
-        kernel.getKernelFeedback().logInfo("Saving all cached data");
+        kernel.getLogback().logInfo("Saving all cached data");
         cache.iterator().forEachRemaining((entry) -> {
             try {
-                kernel.getKernelFeedback().logDebug("Saving %s", entry.getUuid().toString());
+                kernel.getLogback().logDebug("Saving %s", entry.getUuid().toString());
                 writeFile(entry);
             } catch (IOException e) {
-                kernel.getKernelFeedback().logError("Failed to save data for %s", e, entry.getUuid().toString());
+                kernel.getLogback().logError("Failed to save data for %s", e, entry.getUuid().toString());
             }
         });
-        kernel.getKernelFeedback().logInfo("Saved all cached data");
+        kernel.getLogback().logInfo("Saved all cached data");
     }
 
 
@@ -70,13 +65,13 @@ public final class DataRegistry implements KernelReference {
             var data = iterator.next();
             tasks.add(saveAsync(data).whenComplete((v, throwable) -> {
                 if(throwable != null)
-                    kernel.getKernelFeedback().logError("Failed to save data for %s", throwable, data.getUuid().toString());
+                    kernel.getLogback().logError("Failed to save data for %s", throwable, data.getUuid().toString());
                 else {
-                    kernel.getKernelFeedback().logDebug("Saved data for %s", data.getUuid().toString());
+                    kernel.getLogback().logDebug("Saved data for %s", data.getUuid().toString());
                 }
             }));
         }
-        kernel.getKernelFeedback().logInfo("Asynchronously saved all cached data");
+        kernel.getLogback().logInfo("Asynchronously saved all cached data");
         return tasks;
     }
 
@@ -143,8 +138,8 @@ public final class DataRegistry implements KernelReference {
             DataProfile.DataProfileBuilder builder = DataProfile.builder();
 
             StringBuffer key_buffer = new StringBuffer();
-            ByteBuffer val_buffer = ByteBuffer.allocate(Integer.BYTES);
-            Map<String, Integer> data = new HashMap<>();
+            ByteBuffer val_buffer = ByteBuffer.allocate(Long.BYTES);
+            Map<String, Long> data = new HashMap<>();
 
             boolean key = true;
             int readen;
@@ -160,8 +155,7 @@ public final class DataRegistry implements KernelReference {
                     if(!val_buffer.hasRemaining()) {
                         //END OF RECORD
                         key = true;
-                        data.put(key_buffer.toString(), val_buffer.getInt(0));
-                        System.out.println("read " + key_buffer.toString() + " : " + val_buffer.getInt(0));
+                        data.put(key_buffer.toString(), val_buffer.getLong(0));
                         key_buffer.setLength(0);
                         val_buffer.clear();
                     }
@@ -174,18 +168,18 @@ public final class DataRegistry implements KernelReference {
 
     private void writeFile(@NonNull DataProfile profile) throws IOException {
         try (OutputStream out = new FileOutputStream(data_path.resolve(profile.getUuid() + ".bin").toFile())) {
-            ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
-            for (Map.Entry<String, Integer> datum : profile.getData()) {
+            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+            for (Map.Entry<String, Long> datum : profile.getData()) {
                 out.write(datum.getKey().getBytes());
                 out.write(0x0);
-                out.write(buffer.putInt(0, datum.getValue()).array());
+                out.write(buffer.putLong(0, datum.getValue()).array());
                 out.flush();
             }
         }
     }
 
     @Override
-    public @NonNull RPets getKernelReference() {
+    public @NonNull RPets getPetRef() {
         return kernel;
     }
 }

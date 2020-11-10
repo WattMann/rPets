@@ -1,2 +1,13 @@
 prefix: "&3Retrox &4Pets"
+experience:
+ base: 1000
+ exponent: 0.25d
+breaking:
+ default: 2
+ stone: 1
+ cobblestone: 1
+ diamond_block: 5
+ dirt: -1
 
+killing:
+ zombie: 2

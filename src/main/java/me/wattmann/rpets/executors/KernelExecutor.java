@@ -3,14 +3,14 @@ package me.wattmann.rpets.executors;
 import com.kirelcodes.miniaturepets.pets.PetManager;
 import lombok.NonNull;
 import me.wattmann.rpets.RPets;
-import me.wattmann.rpets.imp.KernelReference;
+import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 
 
-public final class KernelExecutor implements KernelReference {
+public final class KernelExecutor implements RPetsComponent {
 
     @NonNull protected final RPets kernel;
 
@@ -25,7 +25,7 @@ public final class KernelExecutor implements KernelReference {
         if((command = kernel.getCommand("petxp")) != null)
             command.setExecutor(this::onCommand);
          else
-            kernel.getKernelFeedback().logError("Failed to initialize command executor.", null);
+            kernel.getLogback().logError("Failed to initialize command executor.", null);
 
     }
 
@@ -41,7 +41,7 @@ public final class KernelExecutor implements KernelReference {
     }
 
     @Override
-    public @NonNull RPets getKernelReference() {
+    public @NonNull RPets getPetRef() {
         return kernel;
     }
 }

@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class KernelFeedback
+public class Logback
 {
     @NonNull protected final String prefix;
     @NonNull protected final Logger logger;
@@ -17,7 +17,7 @@ public class KernelFeedback
     /**
      * Default constructor, protected
      * */
-    protected KernelFeedback(@NonNull String prefix, @NonNull Logger logger) {
+    protected Logback(@NonNull String prefix, @NonNull Logger logger) {
         this.prefix = prefix;
         this.logger = logger;
     }
@@ -49,7 +49,7 @@ public class KernelFeedback
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + String.format(message, format)));
     }
 
-    public static @NonNull KernelFeedback make(@NonNull String prefix) {
-        return new KernelFeedback(prefix, Bukkit.getLogger());
+    public static @NonNull Logback make(@NonNull String prefix) {
+        return new Logback(prefix, Bukkit.getLogger());
     }
 }
