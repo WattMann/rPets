@@ -78,11 +78,11 @@ public final class DataRegistry implements RPetsComponent {
     /**
      * Asynchronously saves a {@link DataProfile} to its file
      * @param profile {@link DataProfile} to be saved
-     * @return {@link CompletableFuture } of {@link Void} which completes exceptionally when writing to file was unsuccessful, NULL otherwise
+     * @return {@link CompletableFuture } of {@link Void} which completes exceptionally when writing to file was unsuccessful
      * */
     public CompletableFuture<Void> saveAsync(@NonNull DataProfile profile) {
         CompletableFuture<Void> future = new CompletableFuture<>();
-        bukkitExecutor.execute(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 future.orTimeout(1, TimeUnit.MINUTES);
                 writeFile(profile);
@@ -111,6 +111,7 @@ public final class DataRegistry implements RPetsComponent {
      * or null if not found and the boolean create has been set to false
      */
     public CompletableFuture<DataProfile> fetch(UUID uuid, boolean create) {
+        CompletableFuture<DataProfile> future = new CompletableFuture<>();
         return CompletableFuture.supplyAsync(() -> {
             return cache.stream().filter((entry) -> {
                 return entry.getUuid().equals(uuid);
@@ -126,7 +127,7 @@ public final class DataRegistry implements RPetsComponent {
                     cache.add(profile);
                 return profile;
             });
-        }, bukkitExecutor).orTimeout(1, TimeUnit.MINUTES);
+        }).orTimeout(5, TimeUnit.SECONDS);
     }
 
     private @NonNull DataProfile readFile(@NonNull UUID uuid) throws IOException {

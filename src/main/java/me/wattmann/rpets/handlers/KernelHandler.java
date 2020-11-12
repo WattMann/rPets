@@ -59,7 +59,7 @@ public final class KernelHandler implements RPetsComponent, Listener
         return true;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void on(@NonNull BlockBreakEvent event) {
         PetManager.getPetOptional(event.getPlayer()).ifPresent(pet -> {
             final String type = event.getBlock().getType().name();

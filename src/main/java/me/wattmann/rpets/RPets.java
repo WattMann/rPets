@@ -2,6 +2,7 @@ package me.wattmann.rpets;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.wattmann.rpets.config.ConfigRetail;
 import me.wattmann.rpets.data.DataRegistry;
 import me.wattmann.rpets.handlers.KernelHandler;
@@ -18,14 +19,19 @@ public final class RPets extends JavaPlugin
     protected KernelHandler kernelHandler;
 
     @NonNull @Getter
+    protected PlaceholderAPIPlugin papiPlugin;
+
+    @NonNull @Getter
     protected DataRegistry dataRegistry;
 
     @NonNull @Getter
     protected ConfigRetail configRetail;
 
+    @NonNull @Getter
+    protected RPetsSupplier supplier;
+
     @Override
     public void onLoad() {
-
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
 
@@ -33,11 +39,16 @@ public final class RPets extends JavaPlugin
 
         logback.logInfo("Config loaded");
 
+        papiPlugin = (PlaceholderAPIPlugin) Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
+
+        supplier = new RPetsSupplier(this);
+
         configRetail = new ConfigRetail(this);
 
         dataRegistry = new DataRegistry(this);
 
         kernelHandler = new KernelHandler(this);
+
 
         logback.logInfo("Finished loading");
     }
@@ -45,14 +56,15 @@ public final class RPets extends JavaPlugin
     @Override
     public void onEnable()
     {
+
         try {
-            configRetail.init();
+            supplier.init();
         } catch (Exception e) {
-            logback.logError("Failed to initialize config retail.", e);
+            logback.logError("Failed to initialize rpets expansion.", e);
             disable();
             return;
         }
-        logback.logInfo("Config retail initialized!");
+        logback.logInfo("RPets expansion initialized!");
 
         try {
             dataRegistry.init();

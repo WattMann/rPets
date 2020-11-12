@@ -24,6 +24,3 @@ mvn install:install-file -Dfile="$DEPENDENCY_PATH" -DgroupId="$GROUP_ID" -Dartif
 echo "Installed miniaturepets"
 
 
-
-
-

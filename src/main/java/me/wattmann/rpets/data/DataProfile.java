@@ -3,6 +3,8 @@ package me.wattmann.rpets.data;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.wattmann.concurrent.BukkitExecutor;
 import me.wattmann.rpets.tuples.Pair;
 import org.bukkit.ChatColor;
 
@@ -22,8 +24,7 @@ import java.util.stream.Collectors;
          * Default constructor, constructs empty instance of this object
          * */
         public PetData() {
-            entries = Collections.synchronizedMap(new HashMap<>());
-
+            entries = new HashMap<>();
         }
 
         /**
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
         }
 
         /**
-         * Used to set experience level to given pet name
+         * Used to set experience level to given pet name, blocks until mutex frees
          * @param petName name of the pet
          * @param var experience value
          * */
@@ -55,11 +56,11 @@ import java.util.stream.Collectors;
         }
 
         /**
-         * Used to add experience to current experience value to a given pet name
+         * Used to add experience to current experience value to a given pet name, blocks until mutex frees
          * @param petName name of the pet
          * @param var experience integer to add to current experience value
          * */
-        public synchronized void addExperience(@NonNull String petName, long var) {
+        public void addExperience(@NonNull String petName, long var) {
             setExperience(petName, getExperience(petName).orElse(0L) + var);
         }
 

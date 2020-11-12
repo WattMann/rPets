@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.concurrent.*;
 
-public class BukkitExecutor implements Executor {
+@Deprecated public class BukkitExecutor implements Executor {
 
     @NonNull @Getter
     protected final Plugin plugin;
@@ -17,30 +17,50 @@ public class BukkitExecutor implements Executor {
     }
 
     @Override
-    public void execute(Runnable runnable) {
+    public void execute(@NonNull Runnable runnable) {
+        System.out.println("Executing async bukkit task0");
         new BukkitRunnable() {
             @Override
             public void run() {
+                System.out.println("Executing async bukkit task1");
                 runnable.run();
+                this.cancel();
             }
-        }.runTaskAsynchronously(plugin);
+        }.runTask(plugin);
     }
 
-    public void execute(Runnable runnable, long delay) {
+    public void execute(@NonNull Runnable runnable, long delay) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 runnable.run();
+                this.cancel();
             }
         }.runTaskLaterAsynchronously(plugin, delay);
     }
 
-    public void executeTicking(Runnable runnable, long delay, long period) {
+    public void executeTicking(@NonNull  Runnable runnable, long delay, long period) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 runnable.run();
+                this.cancel();
             }
         }.runTaskTimerAsynchronously(plugin, delay, period);
+    }
+
+    public static <T> T await(@NonNull CompletableFuture<T> future) {
+        while(!future.isDone()){
+            System.out.println(future.isDone());
+        }
+        System.out.println("out");
+        try {
+            return future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
