@@ -3,13 +3,9 @@ package me.wattmann.rpets.data;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.wattmann.concurrent.BukkitExecutor;
-import me.wattmann.rpets.tuples.Pair;
 import org.bukkit.ChatColor;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter @Builder public final class DataProfile
 {

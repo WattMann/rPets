@@ -5,6 +5,7 @@ import lombok.NonNull;
 import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -13,11 +14,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public final class KernelHandler implements RPetsComponent, Listener
 {
-    @NonNull protected final RPets kernel;
+    @NonNull private final RPets kernel;
+    @NonNull private Set<Location> latePlaces = new HashSet<>();
 
     /**
      * Default constructor.
@@ -59,8 +65,21 @@ public final class KernelHandler implements RPetsComponent, Listener
         return true;
     }
 
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void on(@NonNull BlockPlaceEvent event) {
+        final var location = event.getBlock().getLocation();
+        latePlaces.add(location);
+
+        kernel.getBukkitExecutor().execute(() -> {
+            latePlaces.remove(location);
+        }, 20 * 15);
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void on(@NonNull BlockBreakEvent event) {
+        if(latePlaces.contains(event.getBlock().getLocation()))
+            return;
         PetManager.getPetOptional(event.getPlayer()).ifPresent(pet -> {
             final String type = event.getBlock().getType().name();
             kernel.getDataRegistry().fetch(event.getPlayer().getUniqueId(), true).thenAccept((profile) -> {

@@ -15,9 +15,9 @@ import java.util.concurrent.*;
 public final class DataRegistry implements RPetsComponent {
 
     @NonNull
-    protected final RPets kernel;
+    private final RPets kernel;
     @NonNull
-    protected Set<DataProfile> cache = Collections.synchronizedSet(new HashSet<>());
+    private final Set<DataProfile> cache = Collections.synchronizedSet(new HashSet<>());
     @NonNull
     private Path data_path;
 

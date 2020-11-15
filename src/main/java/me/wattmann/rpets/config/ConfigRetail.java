@@ -59,7 +59,6 @@ public class ConfigRetail implements RPetsComponent {
 
     }
 
-
     @Override
     public @NonNull RPets getPetRef() {
         return kernel;

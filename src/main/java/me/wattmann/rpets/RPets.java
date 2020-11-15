@@ -3,6 +3,7 @@ package me.wattmann.rpets;
 import lombok.Getter;
 import lombok.NonNull;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import me.wattmann.concurrent.BukkitExecutor;
 import me.wattmann.rpets.config.ConfigRetail;
 import me.wattmann.rpets.data.DataRegistry;
 import me.wattmann.rpets.handlers.KernelHandler;
@@ -13,27 +14,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class RPets extends JavaPlugin
 {
     @NonNull @Getter
-    protected Logback logback;
+    private Logback logback;
 
     @NonNull @Getter
-    protected KernelHandler kernelHandler;
+    private KernelHandler kernelHandler;
 
     @NonNull @Getter
-    protected PlaceholderAPIPlugin papiPlugin;
+    private PlaceholderAPIPlugin papiPlugin;
 
     @NonNull @Getter
-    protected DataRegistry dataRegistry;
+    private DataRegistry dataRegistry;
 
     @NonNull @Getter
-    protected ConfigRetail configRetail;
+    private ConfigRetail configRetail;
 
     @NonNull @Getter
-    protected RPetsSupplier supplier;
+    private RPetsSystem supplier;
+
+    @NonNull @Getter
+    private BukkitExecutor bukkitExecutor;
+
+    @NonNull private String test;
+
 
     @Override
     public void onLoad() {
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
+
 
         this.logback = Logback.make("§6|§fRPets§6|");
 
@@ -41,7 +49,7 @@ public final class RPets extends JavaPlugin
 
         papiPlugin = (PlaceholderAPIPlugin) Bukkit.getPluginManager().getPlugin("PlaceholderAPI");
 
-        supplier = new RPetsSupplier(this);
+        supplier = new RPetsSystem(this);
 
         configRetail = new ConfigRetail(this);
 
@@ -49,6 +57,7 @@ public final class RPets extends JavaPlugin
 
         kernelHandler = new KernelHandler(this);
 
+        bukkitExecutor = new BukkitExecutor(this);
 
         logback.logInfo("Finished loading");
     }

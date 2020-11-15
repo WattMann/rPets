@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 
 public class Logback
 {
-    @NonNull protected final String prefix;
-    @NonNull protected final Logger logger;
+    @NonNull private final String prefix;
+    @NonNull private final Logger logger;
 
     /**
      * Default constructor, protected
