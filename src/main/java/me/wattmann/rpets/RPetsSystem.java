@@ -37,7 +37,7 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
 
     @Override
     public @NotNull String getIdentifier() {
-        return "petexperience";
+        return "rpets";
     }
 
     @Override
@@ -95,8 +95,6 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
     public @NonNull Optional<Reward> getReward(@NonNull String lvl) {
         return Optional.empty(); //TODO
     }
-
-
 
     @Override
     public @NonNull RPets getPetRef() {

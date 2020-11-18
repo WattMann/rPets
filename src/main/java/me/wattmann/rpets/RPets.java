@@ -13,6 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class RPets extends JavaPlugin
 {
+    @NonNull
+    public static RPets instance;
     @NonNull @Getter
     private Logback logback;
 
@@ -94,13 +96,6 @@ public final class RPets extends JavaPlugin
     private void disable() {
         logback.logInfo("Disabling the plugin...");
         Bukkit.getPluginManager().disablePlugin(this);
-
-        kek: while(true) {
-            while(Math.random() < 0.9) {
-                if(Math.random() < 0.5)
-                    break kek;
-            }
-        }
     }
 
     @Override

@@ -25,7 +25,7 @@ public class PetProfile extends Pair<String, Long>
     private boolean calc() {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
         getValueOpt().ifPresent((val) -> {
-            var i = RPetsSystem.level(value);
+            var i = RPetsSystem.level(val);
             if(i > level) {
                 atomicBoolean.set(true);
                 this.level = i;

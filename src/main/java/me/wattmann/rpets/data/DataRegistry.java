@@ -34,6 +34,7 @@ public final class DataRegistry implements RPetsComponent {
     @Override
     public void init() throws Exception {
         this.data_path = Path.of(getPetRef().getDataFolder().toPath().toString(), "data");
+        this.data_path.toFile().mkdirs();
         bukkitDispatcher.executeTicking(this::saveCachedAsync, 0L, 20 * 60 * 5);
         kernel.getLogback().logInfo("Async save callback hooked");
     }

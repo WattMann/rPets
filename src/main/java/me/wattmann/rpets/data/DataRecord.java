@@ -3,10 +3,12 @@ package me.wattmann.rpets.data;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.events.PetLevelupEvent;
 import me.wattmann.rpets.tuples.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -27,7 +29,8 @@ import java.util.*;
         public PetData(@NonNull Map<String, Long> def) {
             this();
             def.forEach((key, val) -> {
-                data.add(new PetProfile(ChatColor.stripColor(key), val));
+                if(find(key).isEmpty())
+                    data.add(new PetProfile(ChatColor.stripColor(key), val));
             });
         }
         /**
@@ -40,7 +43,7 @@ import java.util.*;
                 if(datum.setVal(val))
                     Bukkit.getPluginManager().callEvent(new PetLevelupEvent(datum));
             }, () -> {
-                data.add(new PetProfile(key, val));
+                data.add(new PetProfile(ChatColor.stripColor(key), val));
             });
         }
 
@@ -50,8 +53,10 @@ import java.util.*;
          * @param val value to be added to current xp
          * */
         public void add(@NonNull String key, long val) {
-            find(key).ifPresent((datum) -> {
-                set(key, datum.getValueOpt().orElse(0L) + val);
+            find(key).ifPresentOrElse((datum) -> {
+                set(ChatColor.stripColor(key), datum.getValueOpt().orElse(0L) + val);
+            }, () -> {
+                data.add(new PetProfile(ChatColor.stripColor(key), val));
             });
         }
 
@@ -61,7 +66,7 @@ import java.util.*;
          * @param key name of the pet
          * @return {@link Optional} of {@link PetProfile}
          * */
-        public Optional<PetProfile> find(String key) {
+        public Optional<PetProfile> find(@NonNull String key) {
             return data.stream().filter((datum) -> {
                 return datum.getKey().equals(ChatColor.stripColor(key));
             }).findFirst();

@@ -3,6 +3,7 @@ package me.wattmann.rpets.handlers;
 import com.kirelcodes.miniaturepets.pets.PetManager;
 import lombok.NonNull;
 import me.wattmann.rpets.RPets;
+import me.wattmann.rpets.events.PetLevelupEvent;
 import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -105,6 +106,10 @@ public final class KernelHandler implements RPetsComponent, Listener
             });
         }
 
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void on(@NonNull PetLevelupEvent event) {
     }
 
     @Override

@@ -12,7 +12,8 @@ public class PetLevelupEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     @NonNull @Getter private final PetProfile profile;
 
-    public PetLevelupEvent(@NonNull PetProfile profile) {
+    public PetLevelupEvent( @NonNull PetProfile profile) {
+        super(true);
         this.profile = profile;
     }
 
