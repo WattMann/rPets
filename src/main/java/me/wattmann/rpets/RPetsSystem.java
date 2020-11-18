@@ -1,15 +1,13 @@
 package me.wattmann.rpets;
 
-import io.netty.handler.codec.serialization.ObjectEncoder;
 import lombok.NonNull;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.wattmann.rpets.data.DataProfile;
+import me.wattmann.rpets.data.DataRecord;
 import me.wattmann.rpets.imp.RPetsComponent;
 import me.wattmann.rpets.model.config.Reward;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -59,10 +57,14 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
         if(player == null)
             return null;
         else {
-            DataProfile profile = kernel.getDataRegistry().fetch(player.getUniqueId(), false).join();
+            DataRecord profile = kernel.getDataRegistry().fetch(player.getUniqueId(), false).join();
             if(profile == null)
                 return null;
-            return String.valueOf(level(profile.getData().getExperience(params).orElse(0L)));
+            var pet = profile.getData().find(params);
+            if(pet.isEmpty())
+                return "0";
+             else
+                return String.valueOf(pet.get().getLevel());
         }
     }
     @Override

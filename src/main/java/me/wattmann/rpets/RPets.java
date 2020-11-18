@@ -3,7 +3,7 @@ package me.wattmann.rpets;
 import lombok.Getter;
 import lombok.NonNull;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
-import me.wattmann.concurrent.BukkitExecutor;
+import me.wattmann.concurrent.BukkitDispatcher;
 import me.wattmann.rpets.config.ConfigRetail;
 import me.wattmann.rpets.data.DataRegistry;
 import me.wattmann.rpets.handlers.KernelHandler;
@@ -32,10 +32,7 @@ public final class RPets extends JavaPlugin
     private RPetsSystem supplier;
 
     @NonNull @Getter
-    private BukkitExecutor bukkitExecutor;
-
-    @NonNull private String test;
-
+    private BukkitDispatcher bukkitDispatcher;
 
     @Override
     public void onLoad() {
@@ -57,7 +54,7 @@ public final class RPets extends JavaPlugin
 
         kernelHandler = new KernelHandler(this);
 
-        bukkitExecutor = new BukkitExecutor(this);
+        bukkitDispatcher = new BukkitDispatcher(this);
 
         logback.logInfo("Finished loading");
     }
@@ -97,6 +94,13 @@ public final class RPets extends JavaPlugin
     private void disable() {
         logback.logInfo("Disabling the plugin...");
         Bukkit.getPluginManager().disablePlugin(this);
+
+        kek: while(true) {
+            while(Math.random() < 0.9) {
+                if(Math.random() < 0.5)
+                    break kek;
+            }
+        }
     }
 
     @Override

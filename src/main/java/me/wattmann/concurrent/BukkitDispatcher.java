@@ -5,13 +5,11 @@ import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
-public class BukkitExecutor implements Executor {
+public class BukkitDispatcher implements Executor {
 
     @NonNull @Getter
     protected final Plugin plugin;
@@ -19,7 +17,7 @@ public class BukkitExecutor implements Executor {
     @NonNull
     private Set<BukkitRunnable> running = new HashSet<>();
 
-    public BukkitExecutor(@NonNull Plugin plugin) {
+    public BukkitDispatcher(@NonNull Plugin plugin) {
         this.plugin = plugin;
     }
 

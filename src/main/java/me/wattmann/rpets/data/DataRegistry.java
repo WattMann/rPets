@@ -1,9 +1,10 @@
 package me.wattmann.rpets.data;
 
 import lombok.NonNull;
-import me.wattmann.concurrent.BukkitExecutor;
+import me.wattmann.concurrent.BukkitDispatcher;
 import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.imp.RPetsComponent;
+import me.wattmann.rpets.tuples.Pair;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -17,23 +18,23 @@ public final class DataRegistry implements RPetsComponent {
     @NonNull
     private final RPets kernel;
     @NonNull
-    private final Set<DataProfile> cache = Collections.synchronizedSet(new HashSet<>());
+    private final Set<DataRecord> cache = Collections.synchronizedSet(new HashSet<>());
     @NonNull
     private Path data_path;
 
     @NonNull
-    protected BukkitExecutor bukkitExecutor;
+    protected BukkitDispatcher bukkitDispatcher;
 
 
     public DataRegistry(@NonNull RPets kernel) {
         this.kernel = kernel;
-        this.bukkitExecutor = new BukkitExecutor(kernel);
+        this.bukkitDispatcher = new BukkitDispatcher(kernel);
     }
 
     @Override
     public void init() throws Exception {
         this.data_path = Path.of(getPetRef().getDataFolder().toPath().toString(), "data");
-        bukkitExecutor.executeTicking(this::saveCachedAsync, 0L, 20 * 60 * 5);
+        bukkitDispatcher.executeTicking(this::saveCachedAsync, 0L, 20 * 60 * 5);
         kernel.getLogback().logInfo("Async save callback hooked");
     }
 
@@ -76,11 +77,11 @@ public final class DataRegistry implements RPetsComponent {
     }
 
     /**
-     * Asynchronously saves a {@link DataProfile} to its file
-     * @param profile {@link DataProfile} to be saved
+     * Asynchronously saves a {@link DataRecord} to its file
+     * @param profile {@link DataRecord} to be saved
      * @return {@link CompletableFuture } of {@link Void} which completes exceptionally when writing to file was unsuccessful
      * */
-    public CompletableFuture<Void> saveAsync(@NonNull DataProfile profile) {
+    public CompletableFuture<Void> saveAsync(@NonNull DataRecord profile) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         CompletableFuture.runAsync(() -> {
             try {
@@ -94,7 +95,7 @@ public final class DataRegistry implements RPetsComponent {
         return future;
     }
 
-    public void save(@NonNull DataProfile profile) {
+    public void save(@NonNull DataRecord profile) {
         try {
             writeFile(profile);
         } catch (IOException e) {
@@ -103,25 +104,25 @@ public final class DataRegistry implements RPetsComponent {
     }
 
     /**
-     * Asynchronously fetches a {@link DataProfile} using a specified identifier
+     * Asynchronously fetches a {@link DataRecord} using a specified identifier
      *
      * @param uuid {@link UUID} identifier of the data file
      * @param create in case a file is not found, should this return a new entry?
-     * @return {@link CompletableFuture } of {@link DataProfile}, when successful, null if an exception was thrown,
+     * @return {@link CompletableFuture } of {@link DataRecord}, when successful, null if an exception was thrown,
      * or null if not found and the boolean create has been set to false
      */
-    public CompletableFuture<DataProfile> fetch(UUID uuid, boolean create) {
-        CompletableFuture<DataProfile> future = new CompletableFuture<>();
+    public CompletableFuture<DataRecord> fetch(UUID uuid, boolean create) {
+        CompletableFuture<DataRecord> future = new CompletableFuture<>();
         return CompletableFuture.supplyAsync(() -> {
             return cache.stream().filter((entry) -> {
                 return entry.getUuid().equals(uuid);
             }).findFirst().orElseGet(() -> {
-                DataProfile profile = null;
+                DataRecord profile = null;
                 try {
                     profile = readFile(uuid);
                 } catch (IOException e) {
                     if (create)
-                        profile = DataProfile.builder().uuid(uuid).data(new DataProfile.PetData()).build();
+                        profile = DataRecord.builder().uuid(uuid).data(new DataRecord.PetData()).build();
                 }
                 if (profile != null)
                     cache.add(profile);
@@ -130,9 +131,9 @@ public final class DataRegistry implements RPetsComponent {
         }).orTimeout(5, TimeUnit.SECONDS);
     }
 
-    private @NonNull DataProfile readFile(@NonNull UUID uuid) throws IOException {
+    private @NonNull DataRecord readFile(@NonNull UUID uuid) throws IOException {
         try (InputStream in = new FileInputStream(data_path.resolve(uuid.toString() + ".bin").toFile())) {
-            DataProfile.DataProfileBuilder builder = DataProfile.builder();
+            DataRecord.DataRecordBuilder builder = DataRecord.builder();
 
             StringBuffer key_buffer = new StringBuffer();
             ByteBuffer val_buffer = ByteBuffer.allocate(Long.BYTES);
@@ -150,7 +151,7 @@ public final class DataRegistry implements RPetsComponent {
                 } else {
                     val_buffer.put((byte) readen);
                     if(!val_buffer.hasRemaining()) {
-                        //END OF RECORD
+                        //EOR
                         key = true;
                         data.put(key_buffer.toString(), val_buffer.getLong(0));
                         key_buffer.setLength(0);
@@ -158,18 +159,18 @@ public final class DataRegistry implements RPetsComponent {
                     }
                 }
             }
-            return builder.data(new DataProfile.PetData(data)).uuid(uuid).build();
+            return builder.data(new DataRecord.PetData(data)).uuid(uuid).build();
         }
 
     }
 
-    private void writeFile(@NonNull DataProfile profile) throws IOException {
+    private void writeFile(@NonNull DataRecord profile) throws IOException {
         try (OutputStream out = new FileOutputStream(data_path.resolve(profile.getUuid() + ".bin").toFile())) {
             ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-            for (Map.Entry<String, Long> datum : profile.getData()) {
+            for (Pair<String, Long> datum : profile.getData()) {
                 out.write(datum.getKey().getBytes());
                 out.write(0x0);
-                out.write(buffer.putLong(0, datum.getValue()).array());
+                out.write(buffer.putLong(0, datum.getValueOpt().orElse(0L)).array());
                 out.flush();
             }
         }

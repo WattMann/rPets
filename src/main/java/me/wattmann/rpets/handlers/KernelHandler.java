@@ -71,7 +71,7 @@ public final class KernelHandler implements RPetsComponent, Listener
         final var location = event.getBlock().getLocation();
         latePlaces.add(location);
 
-        kernel.getBukkitExecutor().execute(() -> {
+        kernel.getBukkitDispatcher().execute(() -> {
             latePlaces.remove(location);
         }, 20 * 15);
     }
@@ -83,7 +83,7 @@ public final class KernelHandler implements RPetsComponent, Listener
         PetManager.getPetOptional(event.getPlayer()).ifPresent(pet -> {
             final String type = event.getBlock().getType().name();
             kernel.getDataRegistry().fetch(event.getPlayer().getUniqueId(), true).thenAccept((profile) -> {
-                profile.getData().addExperience(
+                profile.getData().add(
                         pet.getContainer().getName(),
                         kernel.getConfigRetail().gets(Integer.class, "breaking." + type, 0)
                 );
@@ -98,7 +98,7 @@ public final class KernelHandler implements RPetsComponent, Listener
         if((player = event.getEntity().getKiller()) != null) {
             PetManager.getPetOptional(event.getEntity().getKiller()).ifPresent((pet) -> {
                 kernel.getDataRegistry().fetch(player.getUniqueId(), true).thenAccept((profile) -> {
-                    profile.getData().addExperience(pet.getContainer().getName(),
+                    profile.getData().add(pet.getContainer().getName(),
                             kernel.getConfigRetail().gets(Integer.class, "killing." + type, 0)
                     );
                 });
