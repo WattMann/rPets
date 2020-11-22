@@ -3,12 +3,9 @@ package me.wattmann.rpets.data;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.events.PetLevelupEvent;
-import me.wattmann.rpets.tuples.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -57,6 +54,7 @@ import java.util.*;
                 set(ChatColor.stripColor(key), datum.getValueOpt().orElse(0L) + val);
             }, () -> {
                 data.add(new PetProfile(ChatColor.stripColor(key), val));
+
             });
         }
 
