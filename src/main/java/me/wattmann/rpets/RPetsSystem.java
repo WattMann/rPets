@@ -55,9 +55,23 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         if(params.isBlank())
             return null;
+
+        String[] args = params.split("_");
+
+        if(args[0].equalsIgnoreCase("requiredxp")) {
+            if(args.length >= 2) {
+                try {
+                    int lvl = Integer.parseInt(args[1]);
+                    return String.valueOf(RPetsSystem.experience(lvl));
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            } else
+                return null;
+        }
+
         if(player == null)
             return null;
-        String[] args = params.split("_");
 
         DataRecord profile = kernel.getDataRegistry().fetch(player.getUniqueId(), false).join();
         if(profile == null)
