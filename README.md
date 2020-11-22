@@ -3,7 +3,10 @@ A MiniaturePets addon made for Retrox.eu
 
 
 ## Placeholders
-All petnames are lowercased, alpha-numeric strings
+All petnames are lowercased, alpha-numeric strings.<br>
+In case a player is not specified or player doesnt exists null is returned.<br>
+In case pet is not specified, or pet doesnt exists null is returned.<br>
+In case xp or lvl is not specified, lvl is returned<br>
 
 #### rpets_xp
 This placeholder represents the xp value of a pet <br>
