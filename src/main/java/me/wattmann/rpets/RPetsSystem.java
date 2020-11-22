@@ -3,6 +3,7 @@ package me.wattmann.rpets;
 import lombok.NonNull;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.wattmann.rpets.data.DataRecord;
+import me.wattmann.rpets.data.PetProfile;
 import me.wattmann.rpets.imp.RPetsComponent;
 import me.wattmann.rpets.model.config.Reward;
 import org.bukkit.OfflinePlayer;
@@ -56,16 +57,26 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
             return null;
         if(player == null)
             return null;
-        else {
-            DataRecord profile = kernel.getDataRegistry().fetch(player.getUniqueId(), false).join();
-            if(profile == null)
-                return null;
-            var pet = profile.getData().find(params);
-            if(pet.isEmpty())
-                return "0";
-             else
-                return String.valueOf(pet.get().getLevel());
-        }
+        String[] args = params.split("_");
+
+        DataRecord profile = kernel.getDataRegistry().fetch(player.getUniqueId(), false).join();
+        if(profile == null)
+            return null;
+
+        Optional<PetProfile> pet;
+
+        if(args.length == 1)
+            pet = profile.getData().find(args[0]);
+        else
+            pet = profile.getData().find(args[1]);
+
+        if(pet.isEmpty())
+            return null;
+        else if(args.length >= 2)
+            if(args[0].equalsIgnoreCase("xp"))
+                return String.valueOf(pet.get().getValue());
+
+        return String.valueOf(pet.get().getLevel());
     }
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {

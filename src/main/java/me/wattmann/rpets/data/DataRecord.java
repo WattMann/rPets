@@ -12,6 +12,7 @@ import java.util.*;
 
 @Getter @Builder public final class DataRecord
 {
+
     private final UUID uuid;
     private final PetData data;
 
@@ -27,7 +28,7 @@ import java.util.*;
             this();
             def.forEach((key, val) -> {
                 if(find(key).isEmpty())
-                    data.add(new PetProfile(ChatColor.stripColor(key), val));
+                    data.add(new PetProfile(DataRegistry.makeFriendly(key), val));
             });
         }
         /**
@@ -40,7 +41,7 @@ import java.util.*;
                 if(datum.setVal(val))
                     Bukkit.getPluginManager().callEvent(new PetLevelupEvent(datum));
             }, () -> {
-                data.add(new PetProfile(ChatColor.stripColor(key), val));
+                data.add(new PetProfile(DataRegistry.makeFriendly(key), val));
             });
         }
 
@@ -51,10 +52,9 @@ import java.util.*;
          * */
         public void add(@NonNull String key, long val) {
             find(key).ifPresentOrElse((datum) -> {
-                set(ChatColor.stripColor(key), datum.getValueOpt().orElse(0L) + val);
+                set(ChatColor.stripColor(key).toLowerCase(), datum.getValueOpt().orElse(0L) + val);
             }, () -> {
-                data.add(new PetProfile(ChatColor.stripColor(key), val));
-
+                data.add(new PetProfile(DataRegistry.makeFriendly(key), val));
             });
         }
 
@@ -66,7 +66,7 @@ import java.util.*;
          * */
         public Optional<PetProfile> find(@NonNull String key) {
             return data.stream().filter((datum) -> {
-                return datum.getKey().equals(ChatColor.stripColor(key));
+                return datum.getKey().equals(DataRegistry.makeFriendly(key));
             }).findFirst();
         }
 

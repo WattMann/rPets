@@ -5,6 +5,7 @@ import me.wattmann.concurrent.BukkitDispatcher;
 import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.imp.RPetsComponent;
 import me.wattmann.rpets.tuples.Pair;
+import org.bukkit.ChatColor;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -51,6 +52,21 @@ public final class DataRegistry implements RPetsComponent {
             }
         });
         kernel.getLogback().logInfo("Saved all cached data");
+    }
+
+    /**
+     * Used to make a  data-friendly string, lowercase and stripped of bukkit color, with only ascii characters allowed
+     * @return a friendly String
+     * */
+    public static @NonNull String makeFriendly(@NonNull final String string) {
+        var copy = ChatColor.stripColor(string);
+        StringBuilder builder = new StringBuilder();
+        for (char c : copy.toCharArray())
+            if(Character.isLetterOrDigit(c))
+                if (c > 0x40 && c < 0x58)
+                    builder.append(Character.valueOf((char) (c + 32)));
+                else builder.append(c);
+        return builder.toString();
     }
 
 
