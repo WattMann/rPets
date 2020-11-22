@@ -1,6 +1,10 @@
 # rPets
 A MiniaturePets addon made for Retrox.eu<br>
 
+## Dependecies
+- PlaceholderAPI
+- MiniaturePets
+
 
 ## Placeholders
 All petnames are lowercased, alpha-numeric strings.<br>
