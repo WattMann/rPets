@@ -15,9 +15,9 @@ killing:
 
 rewards:
  1:
-  - "msg:You son of a bitch you did it;"
-  - "cmd:give {PLAYER} minecraft:log 12;"
-  - "sound:MINECRAFT_ANVIL;"
+  - "msg:You son of a bitch you did it"
+  - "cmd:give {PLAYER} minecraft:log 12"
+  - "sound:MINECRAFT_ANVIL;1f,1f"
 
  2:
   - "msg:oh boy here we go again;"

@@ -10,7 +10,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public final class RPetsSystem extends PlaceholderExpansion implements RPetsComponent {
@@ -118,7 +120,7 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
     }
 
     public @NonNull Optional<Reward> getReward(@NonNull String lvl) {
-        return Optional.empty(); //TODO
+        return Optional.of(new Reward(kernel.getConfig().getStringList("rewards." + lvl), kernel.getLogback()));
     }
 
     @Override
