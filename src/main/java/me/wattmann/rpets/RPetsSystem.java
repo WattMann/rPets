@@ -5,7 +5,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.wattmann.rpets.data.DataRecord;
 import me.wattmann.rpets.data.PetProfile;
 import me.wattmann.rpets.imp.RPetsComponent;
-import me.wattmann.rpets.model.config.Reward;
+import me.wattmann.rpets.model.Reward;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
