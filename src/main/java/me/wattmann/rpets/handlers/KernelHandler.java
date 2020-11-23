@@ -110,6 +110,10 @@ public final class KernelHandler implements RPetsComponent, Listener
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(@NonNull PetLevelupEvent event) {
+        kernel.getSupplier().getReward(event.getProfile().getLevel()).ifPresent(
+                reward -> reward.accept(event.getPlayer()
+                )
+        );
     }
 
     @Override

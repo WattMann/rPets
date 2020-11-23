@@ -5,7 +5,10 @@ import me.wattmann.concurrent.BukkitDispatcher;
 import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.imp.RPetsComponent;
 import me.wattmann.rpets.tuples.Pair;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -125,8 +128,9 @@ public final class DataRegistry implements RPetsComponent {
      *
      * @param uuid {@link UUID} identifier of the data file
      * @param create in case a file is not found, should this return a new entry?
-     * @return {@link CompletableFuture } of {@link DataRecord}, when successful, null if an exception was thrown,
+     * @return {@link CompletableFuture } of {@link DataRecord}, when successful, null if an exception was thrown
      * or null if not found and the boolean create has been set to false
+     *
      */
     public CompletableFuture<DataRecord> fetch(UUID uuid, boolean create) {
         CompletableFuture<DataRecord> future = new CompletableFuture<>();
@@ -139,7 +143,7 @@ public final class DataRegistry implements RPetsComponent {
                     profile = readFile(uuid);
                 } catch (IOException e) {
                     if (create)
-                        profile = DataRecord.builder().uuid(uuid).data(new DataRecord.PetData()).build();
+                        profile = DataRecord.make(uuid);
                 }
                 if (profile != null)
                     cache.add(profile);
@@ -148,10 +152,9 @@ public final class DataRegistry implements RPetsComponent {
         }).orTimeout(5, TimeUnit.SECONDS);
     }
 
+
     private @NonNull DataRecord readFile(@NonNull UUID uuid) throws IOException {
         try (InputStream in = new FileInputStream(data_path.resolve(uuid.toString() + ".bin").toFile())) {
-            DataRecord.DataRecordBuilder builder = DataRecord.builder();
-
             StringBuffer key_buffer = new StringBuffer();
             ByteBuffer val_buffer = ByteBuffer.allocate(Long.BYTES);
             Map<String, Long> data = new HashMap<>();
@@ -176,7 +179,7 @@ public final class DataRegistry implements RPetsComponent {
                     }
                 }
             }
-            return builder.data(new DataRecord.PetData(data)).uuid(uuid).build();
+            return DataRecord.make(uuid, data);
         }
 
     }
