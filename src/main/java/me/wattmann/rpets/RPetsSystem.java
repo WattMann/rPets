@@ -120,7 +120,14 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
     }
 
     public @NonNull Optional<Reward> getReward(@NonNull String lvl) {
-        return Optional.of(new Reward(kernel.getConfig().getStringList("rewards." + lvl), kernel.getLogback()));
+        try {
+            var reward = new Reward(kernel.getConfig().getStringList("rewards." + lvl), kernel.getBukkitDispatcher());
+            return Optional.of(reward);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Optional.empty();
     }
 
     @Override

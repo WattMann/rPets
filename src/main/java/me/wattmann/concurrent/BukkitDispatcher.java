@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,18 @@ public class BukkitDispatcher implements Executor {
                 runnable.run();
             }
         }.runTaskAsynchronously(plugin);
+    }
+
+    public void execute(@NotNull Runnable runnable, boolean async) {
+        if(async)
+            execute(runnable);
+        else
+            new BukkitRunnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }.runTask(plugin);
     }
 
     public void execute(@NonNull Runnable runnable, long delay) {

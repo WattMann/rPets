@@ -6,6 +6,7 @@ import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.events.PetLevelupEvent;
 import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -110,10 +111,8 @@ public final class KernelHandler implements RPetsComponent, Listener
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(@NonNull PetLevelupEvent event) {
-        kernel.getSupplier().getReward(event.getProfile().getLevel()).ifPresent(
-                reward -> reward.accept(event.getPlayer()
-                )
-        );
+        kernel.getSupplier().getReward(event.getProfile().getLevel())
+                .ifPresent(reward -> reward.accept(event.getPlayer()));
     }
 
     @Override

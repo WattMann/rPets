@@ -9,12 +9,14 @@ import me.wattmann.rpets.data.DataRegistry;
 import me.wattmann.rpets.handlers.KernelHandler;
 import me.wattmann.rpets.logback.Logback;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class RPets extends JavaPlugin
 {
     @NonNull
     public static RPets instance;
+
     @NonNull @Getter
     private Logback logback;
 
