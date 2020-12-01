@@ -10,9 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 public final class RPetsSystem extends PlaceholderExpansion implements RPetsComponent {
@@ -68,8 +66,7 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
                 } catch (NumberFormatException e) {
                     return null;
                 }
-            } else
-                return null;
+            } return null;
         }
 
         if(player == null)
@@ -90,7 +87,7 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
             return null;
         else if(args.length >= 2)
             if(args[0].equalsIgnoreCase("xp"))
-                return String.valueOf(pet.get().getValue());
+                return String.valueOf(pet.get().getName());
 
         return String.valueOf(pet.get().getLevel());
     }
@@ -115,11 +112,11 @@ public final class RPetsSystem extends PlaceholderExpansion implements RPetsComp
         return required;
     }
 
-    public @NonNull Optional<Reward> getReward(@NonNull int lvl) {
-        return getReward(String.valueOf(lvl));
+    public @NonNull Optional<Reward> getReward(@NonNull int lvl, @NotNull String pet) {
+        return getReward(String.valueOf(lvl), pet);
     }
 
-    public @NonNull Optional<Reward> getReward(@NonNull String lvl) {
+    public @NonNull Optional<Reward> getReward(@NonNull String lvl, @NotNull String pet) {
         try {
             var reward = new Reward(kernel.getConfig().getStringList("rewards." + lvl), kernel.getBukkitDispatcher());
             return Optional.of(reward);

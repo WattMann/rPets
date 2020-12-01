@@ -1,8 +1,6 @@
 package me.wattmann.rpets.model;
 
 import me.wattmann.concurrent.BukkitDispatcher;
-import me.wattmann.rpets.RPets;
-import me.wattmann.rpets.logback.Logback;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -47,7 +45,6 @@ public class Reward implements Consumer<Player> {
                     final String cmd = body.replaceAll("\\{PLAYER}", player.getDisplayName());;
                     dispatcher.execute(() -> {
                         try {
-                            System.out.println(cmd);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
                         } catch (Exception e) {
                             e.printStackTrace();

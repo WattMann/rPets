@@ -3,35 +3,49 @@ package me.wattmann.rpets.data;
 import lombok.Getter;
 import lombok.NonNull;
 import me.wattmann.rpets.RPetsSystem;
-import me.wattmann.rpets.tuples.Pair;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 
-public class PetProfile extends Pair<String, Long>
-{
-    @Getter private int level = 0;
+public class PetProfile {
+    @Getter
+    private final String name;
+    @Getter
+    private int level = 0;
+    @Getter
+    private long experience;
 
-    public PetProfile(@NonNull String key, @Nullable long value) {
-        super(key, value);
+    public PetProfile(@NotNull String name, long experience) {
+        this.name = name;
+        this.experience = experience;
         calc();
     }
 
     protected synchronized boolean setVal(@NonNull long val) {
-        this.value = val;
+        this.experience = val;
         return calc();
     }
 
     private boolean calc() {
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        getValueOpt().ifPresent((val) -> {
-            var i = RPetsSystem.level(val);
-            if(i > level) {
-                atomicBoolean.set(true);
-                this.level = i;
-            }
-        });
-        return atomicBoolean.get();
+        boolean result = false;
+        var recalculated = RPetsSystem.level(experience);
+        if (recalculated > level) {
+            result = true;
+            this.level = recalculated;
+        }
+        return result;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PetProfile)) return false;
+        PetProfile that = (PetProfile) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, level, experience);
+    }
 }

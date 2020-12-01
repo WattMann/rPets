@@ -1,13 +1,10 @@
 package me.wattmann.rpets.data;
 
-import io.netty.buffer.UnpooledUnsafeDirectByteBuf;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import me.wattmann.rpets.events.PetLevelupEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -72,7 +69,7 @@ import java.util.*;
          * */
         public void add(@NonNull String key, long val) {
             find(key).ifPresentOrElse((datum) -> {
-                set(ChatColor.stripColor(key).toLowerCase(), datum.getValueOpt().orElse(0L) + val);
+                set(ChatColor.stripColor(key).toLowerCase(), datum.getExperience() + val);
             }, () -> {
                 data.add(new PetProfile(DataRegistry.makeFriendly(key), val));
             });
@@ -86,7 +83,7 @@ import java.util.*;
          * */
         public Optional<PetProfile> find(@NonNull String key) {
             return data.stream().filter((datum) -> {
-                return datum.getKey().equals(DataRegistry.makeFriendly(key));
+                return datum.getName().equals(DataRegistry.makeFriendly(key));
             }).findFirst();
         }
 

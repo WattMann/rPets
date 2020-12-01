@@ -4,11 +4,7 @@ import lombok.NonNull;
 import me.wattmann.concurrent.BukkitDispatcher;
 import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.imp.RPetsComponent;
-import me.wattmann.rpets.tuples.Pair;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -187,10 +183,10 @@ public final class DataRegistry implements RPetsComponent {
     private void writeFile(@NonNull DataRecord profile) throws IOException {
         try (OutputStream out = new FileOutputStream(data_path.resolve(profile.getUuid() + ".bin").toFile())) {
             ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-            for (Pair<String, Long> datum : profile.getData()) {
-                out.write(datum.getKey().getBytes());
+            for (PetProfile datum : profile.getData()) {
+                out.write(datum.getName().getBytes());
                 out.write(0x0);
-                out.write(buffer.putLong(0, datum.getValueOpt().orElse(0L)).array());
+                out.write(buffer.putLong(0, datum.getExperience()).array());
                 out.flush();
             }
         }

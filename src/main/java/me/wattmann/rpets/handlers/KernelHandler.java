@@ -57,7 +57,7 @@ public final class KernelHandler implements RPetsComponent, Listener
             PetManager.getPetOptional(((Player) sender)).ifPresentOrElse(pet -> {
                 kernel.getDataRegistry().fetch(((Player) sender).getUniqueId(), true).thenAccept(profile -> {
                     profile.getData().forEach(entry -> {
-                        sender.sendMessage(String.format("%s: %d", entry.getKey(), entry.getValue()));
+                        sender.sendMessage(String.format("%s: %d", entry.getName(), entry.getExperience()));
                     });
                 });
             }, () -> {
@@ -111,7 +111,7 @@ public final class KernelHandler implements RPetsComponent, Listener
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(@NonNull PetLevelupEvent event) {
-        kernel.getSupplier().getReward(event.getProfile().getLevel())
+        kernel.getSupplier().getReward(event.getProfile().getLevel(), event.getProfile().getName())
                 .ifPresent(reward -> reward.accept(event.getPlayer()));
     }
 
