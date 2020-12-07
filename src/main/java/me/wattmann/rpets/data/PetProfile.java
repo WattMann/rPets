@@ -2,12 +2,13 @@ package me.wattmann.rpets.data;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.wattmann.rpets.RPetsSystem;
-import org.jetbrains.annotations.NotNull;
+import lombok.Setter;
 
+import java.sql.SQLOutput;
 import java.util.Objects;
 
 public class PetProfile {
+
     @Getter
     private final String name;
     @Getter
@@ -15,11 +16,26 @@ public class PetProfile {
     @Getter
     private long experience;
 
-    public PetProfile(@NotNull String name, long experience) {
+    @Getter
+    @Setter
+    private int base = 1000;
+    @Getter
+    @Setter
+    private double exponent = 0.25d;
+
+    public PetProfile(String name, long experience) {
         this.name = name;
         this.experience = experience;
         calc();
     }
+
+    public PetProfile(String name, long experience, int base, double exponent) {
+        this(name, experience);
+        this.base = base;
+        this.exponent = exponent;
+        calc();
+    }
+
 
     protected synchronized boolean setVal(@NonNull long val) {
         this.experience = val;
@@ -28,12 +44,26 @@ public class PetProfile {
 
     private boolean calc() {
         boolean result = false;
-        var recalculated = RPetsSystem.level(experience);
+        var recalculated = this.level(experience);
         if (recalculated > level) {
             result = true;
             this.level = recalculated;
         }
         return result;
+    }
+
+    public int level(long exp) {
+        int lvl = 0;
+        for (int i = 1; experience(i) <= exp; i++)
+            lvl += 1;
+        return lvl;
+    }
+
+    public long experience(long lvl) {
+        long required = 0;
+        for (int i = 1; i <= lvl; i++)
+            required += i * (base * exponent) + base;
+        return required;
     }
 
     @Override

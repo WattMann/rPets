@@ -3,10 +3,10 @@ package me.wattmann.rpets.handlers;
 import com.kirelcodes.miniaturepets.pets.PetManager;
 import lombok.NonNull;
 import me.wattmann.rpets.RPets;
+import me.wattmann.rpets.data.DataRegistry;
 import me.wattmann.rpets.events.PetLevelupEvent;
 import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -82,13 +82,16 @@ public final class KernelHandler implements RPetsComponent, Listener
     public void on(@NonNull BlockBreakEvent event) {
         if(latePlaces.contains(event.getBlock().getLocation()))
             return;
+        final String type = DataRegistry.makeFriendly(event.getBlock().getType().name());
         PetManager.getPetOptional(event.getPlayer()).ifPresent(pet -> {
-            final String type = event.getBlock().getType().name();
-            kernel.getDataRegistry().fetch(event.getPlayer().getUniqueId(), true).thenAccept((profile) -> {
-                profile.getData().add(
-                        pet.getContainer().getName(),
-                        kernel.getConfigRetail().gets(Integer.class, "breaking." + type, 0)
-                );
+            kernel.getDataRegistry().fetch(event.getPlayer().getUniqueId(), true).thenAccept(dataRecord -> {
+                kernel.getConfigRetail().get(Integer.class, "gain", "blocks", DataRegistry.makeFriendly(pet.getContainer().getName()), type).ifPresentOrElse(exp -> {
+                    dataRecord.getData().add(pet.getContainer().getName(), exp);
+                }, () -> {
+                    kernel.getConfigRetail().get(Integer.class, "gain", "blocks", type).ifPresent((exp) -> {
+                        dataRecord.getData().add(pet.getContainer().getName(), exp);
+                    });
+                });
             });
         });
     }
@@ -99,19 +102,16 @@ public final class KernelHandler implements RPetsComponent, Listener
         final String type = event.getEntity().getType().name();
         if((player = event.getEntity().getKiller()) != null) {
             PetManager.getPetOptional(event.getEntity().getKiller()).ifPresent((pet) -> {
-                kernel.getDataRegistry().fetch(player.getUniqueId(), true).thenAccept((profile) -> {
-                    profile.getData().add(pet.getContainer().getName(),
-                            kernel.getConfigRetail().gets(Integer.class, "killing." + type, 0)
-                    );
-                });
+
             });
+            //TODO
         }
 
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(@NonNull PetLevelupEvent event) {
-        kernel.getSupplier().getReward(event.getProfile().getLevel(), event.getProfile().getName())
+        kernel.getConfigRetail().getReward(event.getProfile().getLevel(), event.getProfile().getName())
                 .ifPresent(reward -> reward.accept(event.getPlayer()));
     }
 

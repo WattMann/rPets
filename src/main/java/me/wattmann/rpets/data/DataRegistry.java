@@ -139,7 +139,7 @@ public final class DataRegistry implements RPetsComponent {
                     profile = readFile(uuid);
                 } catch (IOException e) {
                     if (create)
-                        profile = DataRecord.make(uuid);
+                        profile = DataRecord.make(uuid, kernel);
                 }
                 if (profile != null)
                     cache.add(profile);
@@ -175,7 +175,7 @@ public final class DataRegistry implements RPetsComponent {
                     }
                 }
             }
-            return DataRecord.make(uuid, data);
+            return DataRecord.make(uuid, data, kernel);
         }
 
     }

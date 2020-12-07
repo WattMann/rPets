@@ -3,7 +3,11 @@ package me.wattmann.rpets.config;
 import lombok.NonNull;
 import me.wattmann.rpets.RPets;
 import me.wattmann.rpets.imp.RPetsComponent;
+import me.wattmann.rpets.model.Reward;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 
 public class ConfigRetail implements RPetsComponent {
@@ -19,44 +23,27 @@ public class ConfigRetail implements RPetsComponent {
         this.configuration = kernel.getConfig();
     }
 
-    /**
-     * Used to retrieve datum from configuration, logs errors.
-     * @param type class of the type to return
-     * @param key lowercase key to where the datum is located
-     * @param def default value in case not found or not matching
-     * */
-    public <T> @NonNull T get(Class<T> type, @NonNull String key,  T def) {
-        if (configuration.contains(key.toLowerCase())) {
-            var result = configuration.getObject(key.toLowerCase(), type);
-            if(result == null) {
-                kernel.getLogback().logWarn("Key %s is not of %s type, using default value", key.toLowerCase(), type.getTypeName());
-                return def;
-            } else
-                return result;
-        }
-        else {
-            kernel.getLogback().logWarn("Key %s is not present in config, using default value", key.toLowerCase());
-            return def;
-        }
+    public <T> Optional<T> get(Class<T> type, @NotNull String... paths) {
+        String path = String.join(".", paths);
+        if(configuration.contains(path))
+            return Optional.ofNullable(configuration.getObject(path, type));
+        else
+            return Optional.empty();
     }
 
-    /**
-     * Used to retrieve datum from configuration, does not log errors.
-     * @param type class of the type to return
-     * @param key lowercase key to where the datum is located
-     * @param def default value in case not found or not matching
-     * */
-    public <T> @NonNull T gets(Class<T> type, @NonNull String key,  T def) {
-        if (configuration.contains(key.toLowerCase())) {
-            var result = configuration.getObject(key.toLowerCase(), type);
-            if(result == null)
-                return def;
-            else
-                return result;
-        }
-        else
-            return def;
+    public @NonNull Optional<Reward> getReward(@NonNull int lvl, @NotNull String pet) {
+        return getReward(String.valueOf(lvl), pet);
+    }
 
+    public @NonNull Optional<Reward> getReward(@NonNull String lvl, @NotNull String pet) {
+        try {
+            var reward = new Reward(kernel.getConfig().getStringList("rewards." + lvl), kernel.getBukkitDispatcher());
+            return Optional.of(reward);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Optional.empty();
     }
 
     @Override

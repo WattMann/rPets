@@ -5,9 +5,12 @@ A MiniaturePets addon made for Retrox.eu<br>
 - PlaceholderAPI
 - MiniaturePets
 
+#Rules
+All petnames are lowercased, alpha-numeric strings.<br>
+All config keys (blocknames, entity names) should be lowercased.
+
 
 ## Placeholders
-All petnames are lowercased, alpha-numeric strings.<br>
 In case a player is not specified or player doesnt exists null is returned.<br>
 In case pet is not specified, or pet doesnt exists null is returned.<br>
 In case xp or lvl is not specified, lvl is returned<br>
@@ -27,3 +30,14 @@ e.g: ``` %rpets_lvl_minime% => 15```<br>
 This placeholder represents the required xp to gain a specified level<br>
 params: `[level:integer]`<br>
 e.g ```%rpets_requiredxp_7% => 4064```<br>
+
+
+## Configuration
+
+
+# TODO
+
+- Placeholder parsing, and possibly documentation
+    - Required XP to next level with current pet
+- Per-pet levels
+
