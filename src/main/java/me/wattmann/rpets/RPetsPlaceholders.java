@@ -1,11 +1,16 @@
 package me.wattmann.rpets;
 
+import com.kirelcodes.miniaturepets.pets.PetManager;
 import lombok.NonNull;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.wattmann.rpets.data.DataRecord;
+import me.wattmann.rpets.data.PetProfile;
 import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.ExecutionException;
 
 
 public final class RPetsPlaceholders extends PlaceholderExpansion implements RPetsComponent {
@@ -43,7 +48,46 @@ public final class RPetsPlaceholders extends PlaceholderExpansion implements RPe
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
-        //TODO
+        // experience [petname] (format) : [0] petname or "current", pet exp; [1] format {exp, lvl} default lvl
+        // required [petname]: [0] petname or "current", required exp for next level
+        if (!params.isBlank()) {
+            String[] args = params.split("_");
+
+            if (args.length >= 1) {
+                String action = args[0];
+                    if (args.length >= 2) {
+                        String petname = args[1];
+                        if (petname.equalsIgnoreCase("current"))
+                            if (player.isOnline())
+                                petname = PetManager.getPet(player.getPlayer()).getContainer().getName();
+                            else
+                                return null;
+
+                        String format = null;
+                        if (args.length >= 3)
+                            format = args[2];
+
+                        try {
+                            DataRecord record = kernel.getDataRegistry().fetch(player.getUniqueId(), false).get();
+                            PetProfile profile = record.getData().find(petname).orElse(null);
+                            if (profile != null) {
+                                if (action.equalsIgnoreCase("experience")) {
+                                    if (format == null || format.equalsIgnoreCase("lvl")) {
+                                        return String.valueOf(profile.getLevel());
+                                    } else {
+                                        return String.valueOf(profile.getExperience());
+                                    }
+                                } else if (action.equalsIgnoreCase("required")) {
+                                    return String.valueOf(profile.experience(profile.getLevel() + 1));
+                                }
+                            } else
+                                return "N/A";
+                        } catch (InterruptedException | ExecutionException e) {
+                            kernel.getLogback().logError("Failed to fetch data for player %s[%s]", e, player.getName(), player.getUniqueId());
+                        }
+                }
+            }
+        }
         return null;
     }
 

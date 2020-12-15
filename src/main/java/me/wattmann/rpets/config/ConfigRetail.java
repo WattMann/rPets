@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-
 public class ConfigRetail implements RPetsComponent {
 
     @NonNull

@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Period;
 import java.util.*;
 
 @Getter public final class DataRecord
@@ -56,7 +57,7 @@ import java.util.*;
             this(rpets, player);
             def.forEach((key, val) -> {
                 if(find(key).isEmpty())
-                    data.add(new PetProfile(DataRegistry.makeFriendly(key), val));
+                    create(key, val);
             });
         }
 
@@ -81,20 +82,30 @@ import java.util.*;
          * @param val value to be added to current xp
          * */
         public void add(@NonNull String key, long val) {
-
             find(DataRegistry.makeFriendly(key)).ifPresentOrElse((datum) -> {
                 set(key, datum.getExperience() + val);
             }, () -> create(DataRegistry.makeFriendly(key), val));
         }
 
 
-        private void create(@NonNull String key, long xp) {
-            int base = this.rpets.getConfigRetail().get(Integer.class, "experience", key, "base").orElse(-1);
-            double exponent = this.rpets.getConfigRetail().get(Double.class, "experience", key, "exponent").orElse(-1D);
-            if (base > 0 && exponent > 0)
-                data.add(new PetProfile(key, xp, base, exponent));
-            else
-                data.add(new PetProfile(key, xp));
+        private @NotNull PetProfile create(@NonNull String key, long xp) {
+            final var builder = PetProfile.builder();
+            builder.name(key);
+            builder.experience(xp);
+            this.rpets.getConfigRetail().get(Integer.class, "experience", key, "base").ifPresentOrElse(builder::base, () -> {
+                this.rpets.getConfigRetail().get(Integer.class, "experience", "base").ifPresentOrElse(builder::base, () -> {
+                    builder.base(1000);
+                });
+            });
+            this.rpets.getConfigRetail().get(Double.class, "experience", key, "exponent").ifPresentOrElse(builder::exponent, () -> {
+                this.rpets.getConfigRetail().get(Double.class, "experience", "exponent").ifPresentOrElse(builder::exponent, () -> {
+                    builder.exponent(0.25D);
+                });
+            });
+            var pet = builder.build();
+            pet.calc();
+            data.add(pet);
+            return pet;
         }
 
 
@@ -107,6 +118,18 @@ import java.util.*;
             return data.stream().filter((datum) -> {
                 return datum.getName().equals(DataRegistry.makeFriendly(key));
             }).findFirst();
+        }
+        /**
+         * Used to search and find desired pet profile. And create a new one if not found
+         * @param key name of the pet
+         * @return {@link PetProfile}
+         * */
+        public @NotNull PetProfile findAndCreate(@NonNull String key) {
+            return data.stream().filter((datum) -> {
+                return datum.getName().equals(DataRegistry.makeFriendly(key));
+            }).findFirst().orElseGet(() -> {
+                return this.create(key,0);
+            });
         }
 
         @NotNull

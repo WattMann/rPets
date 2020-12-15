@@ -39,5 +39,4 @@ e.g ```%rpets_requiredxp_7% => 4064```<br>
 
 - Placeholder parsing, and possibly documentation
     - Required XP to next level with current pet
-- Per-pet levels
 

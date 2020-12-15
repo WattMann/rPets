@@ -1,48 +1,35 @@
 package me.wattmann.rpets.data;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLOutput;
 import java.util.Objects;
 
+@Builder
 public class PetProfile {
 
     @Getter
-    private final String name;
+    @NotNull
+    private String name;
+
     @Getter
-    private int level = 0;
+    private int base;
+    @Getter
+    private double exponent;
+
+    @Getter
+    private int level;
     @Getter
     private long experience;
-
-    @Getter
-    @Setter
-    private int base = 1000;
-    @Getter
-    @Setter
-    private double exponent = 0.25d;
-
-    public PetProfile(String name, long experience) {
-        this.name = name;
-        this.experience = experience;
-        calc();
-    }
-
-    public PetProfile(String name, long experience, int base, double exponent) {
-        this(name, experience);
-        this.base = base;
-        this.exponent = exponent;
-        calc();
-    }
-
 
     protected synchronized boolean setVal(@NonNull long val) {
         this.experience = val;
         return calc();
     }
 
-    private boolean calc() {
+    protected boolean calc() {
         boolean result = false;
         var recalculated = this.level(experience);
         if (recalculated > level) {
@@ -52,14 +39,16 @@ public class PetProfile {
         return result;
     }
 
-    public int level(long exp) {
+    public int level(final long exp) {
+        if(exp == 0)
+            return 0;
         int lvl = 0;
         for (int i = 1; experience(i) <= exp; i++)
             lvl += 1;
         return lvl;
     }
 
-    public long experience(long lvl) {
+    public long experience(final long lvl) {
         long required = 0;
         for (int i = 1; i <= lvl; i++)
             required += i * (base * exponent) + base;
@@ -72,6 +61,17 @@ public class PetProfile {
         if (!(o instanceof PetProfile)) return false;
         PetProfile that = (PetProfile) o;
         return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public String toString() {
+        return "PetProfile{" +
+                "name='" + name + '\'' +
+                ", level=" + level +
+                ", experience=" + experience +
+                ", base=" + base +
+                ", exponent=" + exponent +
+                '}';
     }
 
     @Override

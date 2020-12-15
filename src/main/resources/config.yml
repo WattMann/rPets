@@ -3,18 +3,15 @@
 experience:
  base: 100 # default value of base exp (integer)
  exponent: 0.2 # default value of exponent (double)
- boxer:
+ petname:
   base: 150 # type-specific value of base exp
   exponent: 1.5 # type-specific value of exponent
- super-legendary-rare-pet:
-  base: 1500
-  exponent: 0.5
 
 gain:
  entities:
   zombie: 2
- super-legendary-rare-pet:
-  zombie: 1
+ blocks:
+  dirt: 2
 
 
 
