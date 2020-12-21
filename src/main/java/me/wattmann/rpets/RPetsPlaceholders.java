@@ -8,8 +8,12 @@ import me.wattmann.rpets.data.PetProfile;
 import me.wattmann.rpets.imp.RPetsComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 
@@ -45,6 +49,8 @@ public final class RPetsPlaceholders extends PlaceholderExpansion implements RPe
     public @NotNull String getVersion() {
         return kernel.getDescription().getVersion();
     }
+
+    private final HashMap<ItemStack, Integer> drops = new HashMap<>();
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
@@ -85,15 +91,35 @@ public final class RPetsPlaceholders extends PlaceholderExpansion implements RPe
                         } catch (InterruptedException | ExecutionException e) {
                             kernel.getLogback().logError("Failed to fetch data for player %s[%s]", e, player.getName(), player.getUniqueId());
                         }
-                }
+                    }
             }
         }
         return null;
     }
 
+    public @NotNull ItemStack getDrop() {
+        int size = 0;
+        for (Integer value : drops.values())
+            size += value;
+
+        Random random = new Random();
+        int rnd = random.nextInt(size);
+
+
+        int buffer = 0;
+        for (Map.Entry<ItemStack, Integer> itemStackIntegerEntry : drops.entrySet()) {
+            buffer += itemStackIntegerEntry.getValue();
+            if (buffer >= rnd) {
+                return itemStackIntegerEntry.getKey();
+            }
+        }
+
+        return getDrop();
+    }
+
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        if(player == null)
+        if (player == null)
             return null;
         return this.onRequest(player, params);
     }

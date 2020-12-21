@@ -7,6 +7,8 @@ import me.wattmann.rpets.model.Reward;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ConfigRetail implements RPetsComponent {
@@ -36,7 +38,21 @@ public class ConfigRetail implements RPetsComponent {
 
     public @NonNull Optional<Reward> getReward(@NonNull String lvl, @NotNull String pet) {
         try {
-            var reward = new Reward(kernel.getConfig().getStringList("rewards." + lvl), kernel.getBukkitDispatcher());
+            List<String> commands = kernel.getConfig().getStringList("rewards." + pet + "." + lvl);
+
+            if (commands.isEmpty())
+                commands = kernel.getConfig().getStringList("rewards." + lvl);
+            if (commands.isEmpty())
+                commands = new ArrayList<>();
+
+            List<String> general = kernel.getConfig().getStringList("rewards.general");
+
+            if (general.isEmpty())
+                return Optional.empty();
+
+            commands.addAll(general);
+
+            var reward = new Reward(commands, kernel.getBukkitDispatcher(), lvl);
             return Optional.of(reward);
         } catch (Exception e) {
             e.printStackTrace();

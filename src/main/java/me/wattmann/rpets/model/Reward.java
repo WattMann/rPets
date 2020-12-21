@@ -19,11 +19,10 @@ public class Reward implements Consumer<Player> {
     public static final String COMMAND_PATTERN = "(..*);(..*)";
     private Set<Consumer<Player>> commands = new HashSet<>();
 
-    public Reward(@NotNull final List<String> commands, @NotNull BukkitDispatcher dispatcher)
-    {
+    public Reward(@NotNull final List<String> commands, @NotNull BukkitDispatcher dispatcher, String lvl) {
         for (String command : commands) {
             Matcher matcher = Pattern.compile(COMMAND_PATTERN).matcher(command);
-            if(!matcher.matches())
+            if (!matcher.matches())
                 throw new IllegalArgumentException("Invalid command " + command);
 
             String label = matcher.group(1);
@@ -34,7 +33,7 @@ public class Reward implements Consumer<Player> {
             if(label.equals("msg")) {
                 this.commands.add((player) -> {
                     dispatcher.execute(() -> {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', body));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&', body.replaceAll("\\{LVL}", lvl)));
                     }, false);
                 });
             }
@@ -42,7 +41,7 @@ public class Reward implements Consumer<Player> {
             if(label.equals("cmd")) {
                 System.out.println("adding cmd");
                 this.commands.add(player -> {
-                    final String cmd = body.replaceAll("\\{PLAYER}", player.getDisplayName());;
+                    final String cmd = body.replaceAll("\\{PLAYER}", player.getDisplayName());
                     dispatcher.execute(() -> {
                         try {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);

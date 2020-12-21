@@ -13,6 +13,18 @@ gain:
  blocks:
   dirt: 2
 
+# Reward configuration
+# format action; body
+# actions: msg, cmd, sound
+rewards:
+ general: # executed every level for every pet
+  - "msg;You leveled up, you new level is {LVL}"
+ 1: # executed on lvl 1 for every pet
+  - "cmd; give {PLAYER} minecraft:iron_hoe"
+ petname: # executed on lvl 1 for pet named "petname"
+  1:
+   - "msg;you aint getting nothing"
+
 
 
 
