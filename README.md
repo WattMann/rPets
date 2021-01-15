@@ -1,5 +1,6 @@
 # rPets
 A MiniaturePets addon made for Retrox.eu<br>
+Creates a leveling system for miniature pets, you can customize level-rewards and level requirements for each pet.
 
 ## Dependecies
 - PlaceholderAPI
