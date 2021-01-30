@@ -75,19 +75,16 @@ public final class RPetsPlaceholders extends PlaceholderExpansion implements RPe
 
                         try {
                             DataRecord record = kernel.getDataRegistry().fetch(player.getUniqueId(), false).get();
-                            PetProfile profile = record.getData().find(petname).orElse(null);
-                            if (profile != null) {
-                                if (action.equalsIgnoreCase("experience")) {
-                                    if (format == null || format.equalsIgnoreCase("lvl")) {
-                                        return String.valueOf(profile.getLevel());
-                                    } else {
-                                        return String.valueOf(profile.getExperience());
-                                    }
-                                } else if (action.equalsIgnoreCase("required")) {
-                                    return String.valueOf(profile.experience(profile.getLevel() + 1));
+                            PetProfile profile = record.getData().findOrCreate(petname);
+                            if (action.equalsIgnoreCase("experience")) {
+                                if (format == null || format.equalsIgnoreCase("lvl")) {
+                                    return String.valueOf(profile.getLevel());
+                                } else {
+                                    return String.valueOf(profile.getExperience());
                                 }
-                            } else
-                                return "N/A";
+                            } else if (action.equalsIgnoreCase("required")) {
+                                return String.valueOf(profile.experience(profile.getLevel() + 1));
+                            }
                         } catch (InterruptedException | ExecutionException e) {
                             kernel.getLogback().logError("Failed to fetch data for player %s[%s]", e, player.getName(), player.getUniqueId());
                         }

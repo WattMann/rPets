@@ -124,7 +124,7 @@ import java.util.*;
          * @param key name of the pet
          * @return {@link PetProfile}
          * */
-        public @NotNull PetProfile findAndCreate(@NonNull String key) {
+        public @NotNull PetProfile findOrCreate(@NonNull String key) {
             return data.stream().filter((datum) -> {
                 return datum.getName().equals(DataRegistry.makeFriendly(key));
             }).findFirst().orElseGet(() -> {

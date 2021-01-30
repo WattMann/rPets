@@ -62,7 +62,7 @@ public final class DataRegistry implements RPetsComponent {
         StringBuilder builder = new StringBuilder();
         for (char c : copy.toCharArray())
             if(Character.isLetterOrDigit(c))
-                if (c > 0x40 && c < 0x58)
+                if (c > 0x40 && c < 0x5B)
                     builder.append(Character.valueOf((char) (c + 32)));
                 else builder.append(c);
         return builder.toString();

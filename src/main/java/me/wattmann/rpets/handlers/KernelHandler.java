@@ -53,17 +53,6 @@ public final class KernelHandler implements RPetsComponent, Listener
     }
 
     private boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
-        if(sender instanceof Player) {
-            PetManager.getPetOptional(((Player) sender)).ifPresentOrElse(pet -> {
-                kernel.getDataRegistry().fetch(((Player) sender).getUniqueId(), true).thenAccept(profile -> {
-                    profile.getData().forEach(entry -> {
-                        sender.sendMessage(String.format("%s: %d", entry.getName(), entry.getExperience()));
-                    });
-                });
-            }, () -> {
-                System.out.println("no lol");
-            });
-        }
         return true;
     }
 
@@ -102,11 +91,17 @@ public final class KernelHandler implements RPetsComponent, Listener
         final String type = event.getEntity().getType().name();
         if((player = event.getEntity().getKiller()) != null) {
             PetManager.getPetOptional(event.getEntity().getKiller()).ifPresent((pet) -> {
-
+                kernel.getDataRegistry().fetch(player.getUniqueId(), true).thenAccept(dataRecord -> {
+                    kernel.getConfigRetail().get(Integer.class, "gain", "entities", DataRegistry.makeFriendly(pet.getContainer().getName()), DataRegistry.makeFriendly(type)).ifPresentOrElse(exp -> {
+                        dataRecord.getData().add(pet.getContainer().getName(), exp);
+                    }, () -> {
+                        kernel.getConfigRetail().get(Integer.class, "gain", "entities", DataRegistry.makeFriendly(type)).ifPresent((exp) -> {
+                            dataRecord.getData().add(pet.getContainer().getName(), exp);
+                        });
+                    });
+                });
             });
-            //TODO
         }
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
